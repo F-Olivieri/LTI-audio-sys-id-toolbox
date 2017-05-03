@@ -5,5 +5,3 @@ A toolbox for multichannel audio measurements in Matlab.
 ## Requirements
 1) Matlab 2016b 32 bit
 2) 'pawavplay' engine
-
-
