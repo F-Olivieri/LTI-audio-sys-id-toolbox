@@ -14,7 +14,7 @@ if nargin < 4, N_overlap = round(N_fft/2); end % Default overlap is 50% of the l
 
 % The assumption is made that the number of channel is way smaller
 % than the duration of the signals. If that is not the case,
-% probabply we have to transpose the matrix (as, for example,
+% probably we have to transpose the matrix (as, for example,
 % the multichannel matlab tlbx returns a matrix that is
 % LENGTHTIME * NCHANNELS
 if NumbOfChannels > DurationTime

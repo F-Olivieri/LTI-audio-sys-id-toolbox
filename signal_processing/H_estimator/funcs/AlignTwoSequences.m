@@ -10,7 +10,7 @@ function [DelayedOutputSignal, delay_in_samples] = ...
             if nargin < 4, FracDelayOptionFlag = 0; freqvect = 0; fs = 0; N_fft = 0; end
             InputSignal = InputSignal(:);
             OutputSignal = OutputSignal(:);
-            delay_in_samples = HEstimatorTlbx.EstimateDelayInSamplesBtwTwoSequences(InputSignal, OutputSignal);
+            delay_in_samples = EstimateDelayInSamplesBtwTwoSequences(InputSignal, OutputSignal);
             % Shift in the time domain
             DelayedOutputSignal = circshift(OutputSignal, -delay_in_samples);
         end
