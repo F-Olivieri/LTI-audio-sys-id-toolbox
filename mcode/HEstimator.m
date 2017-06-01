@@ -33,7 +33,7 @@ function [h, H, COH] = HEstimator(InputSignal, OutputSignal, N_fft, N_overlap_pe
 % - H: the (N_FFT/2 + 1 X N_CHANNELS) matrix of the estimated transfer functions
 % - COH: the (N_FFT/2 + 1 X N_CHANNELS) matrix of the coherence
 
-%% LICENSE - TO-DO:ADD DISCLAIMER
+%% LICENSE
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
