@@ -1,4 +1,4 @@
-function [h, H, COH] = HEstimator(InputSignal, OutputSignal, N_fft, N_overlap, ...
+function [h, H, COH] = HEstimator(InputSignal, OutputSignal, N_fft, N_overlap_perc, ...
     EstimatorTypeStr, AlignmentBoolean, PlotFlag, FigureNameTextStr, fs)
 % HESTIMATOR Toolbox by Ferdinando Olivieri (f.olivieri@ieee.org)
 
@@ -20,7 +20,9 @@ function [h, H, COH] = HEstimator(InputSignal, OutputSignal, N_fft, N_overlap, .
 % - INPUTSIGNAL is the N_SAMPLES X 1 vector of the white noise excitation signal
 % - OUTPUTSIGNAL is the N_SAMPLES X N_CHANNELS matrix of the recorded signals.
 % - N_FFT is the duration (in samples) of the estimated impulse responses
-% - N_OVERLAP is the length of the overlap window between frames expressed in percentage of N_FFT (default: 50%)
+% - N_OVERLAP_PERC is the length of the overlap window between frames
+%                  expressed in percentage of N_FFT (default: 50). 
+%                  It can be equal to 25, 33, 50, 75.
 % - ESTIMATORTYPESTR is a string indicating which H-Estimator to use ('H1' / 'H2' / 'H3' -- default 'H1')
 % - ALIGNMENTBOOLEAN activate/deactivate estimation with aligned sequencies to improve signal/noise ratio in the estimated IRs (default: 1).
 % - PLOTFLAG (either 1 or 0) to activate/deactivate plots for each estimation
@@ -60,13 +62,30 @@ if nargin < 1
     outputtest = zeros(n_samples, 2); % fake 2-ch recording
     outputtest(:, 1) = circshift(whitenoise, 100); % basically a delayed version of the input
     outputtest(:, 2) = circshift(whitenoise, 200);
-    FigureNameTextStr = 'Example code';
-    % Estimation
+    
+    % Parameters for the Estimation
     N_fft = 300; % duration of the estimated IRs
-    [h, H, COH] = HEstimator(whitenoise, outputtest, N_fft, ...
-        round(N_fft/2), 'H1', 1, 1, FigureNameTextStr, fs);
+    N_overlap_perc = 50; % percent of overlap
+    AlignmentBoolean = 1;
+    PlotFlag = 1;
+    FigureNameTextStr = 'Example code';
+
+    % Estimation (with plots)
+    [h_test, H_test, COH_test] = HEstimator(whitenoise, outputtest, N_fft, ...
+        N_overlap_perc, 'H1', AlignmentBoolean, PlotFlag, FigureNameTextStr, fs);
+    
+     % Estimation (without plots)
+    [h_test, H_test, COH_test] = HEstimator(whitenoise, outputtest, N_fft, ...
+        N_overlap_perc, 'H1', AlignmentBoolean);
+    
+    
     
     disp('End of the example code...');
+    % exit the function by assigning NaN to output values to avoid Matlab's
+    % complaint if values are not assigned.
+    h = NaN;
+    H = NaN; 
+    COH = NaN;
     return;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -77,7 +96,8 @@ end
 if nargin < 7, PlotFlag = 0; end  % no plots at each iteration
 if nargin < 6, AlignmentBoolean = 1; end %perform the estimation with the alignment of the signals
 if nargin < 5, EstimatorTypeStr = 'H1'; end  %The H1 estimator is the default one
-if nargin < 4, N_overlap = round(N_fft/2); end % Default overlap is 50% of the length of the window
+if nargin < 4, N_overlap_perc = 50; end % Default overlap is 50% of the length of the window
+
 
 %% Check INPUTS
 
@@ -96,16 +116,23 @@ if N_fft > N_SAMPLES_out
     return;
 end
 
+% Check existance of variables if PlotFlag == 1
 if PlotFlag == 1
     if ~exist('fs', 'var')
-        disp('ERROR: you must specify a sampling frequency in Hertz.');
-        return;
+        disp('ERROR: if PLOTFLAG = 1 you must specify a sampling frequency in Hertz.'); return;
     end
     
     if ~exist('FigureNameTextStr', 'var')
-        disp('ERROR: you must specify a name for the figure.');
-        return;
+        disp('ERROR: if PLOTFLAG = 1 you must specify a name for the figure.'); return;
     end
+end
+
+% Check N_overlap_percentage is initialized properly
+switch N_overlap_perc
+    case {25, 33, 50, 75}
+        % Everything is OK. do nothing
+    otherwise
+        disp('ERROR: N_overlap_percentage must be either 25, 33, 50, 75.'); return;
 end
 
 %% Variable initialization
@@ -113,7 +140,7 @@ lengthfreqvect = N_fft/2 + 1; % the number of frequency bins
 h = zeros(N_fft, N_CHANNELS); % the matrix of estimated impulse responses
 H = zeros(lengthfreqvect, N_CHANNELS); % the matrix of estimated Transfer functions
 COH = zeros(lengthfreqvect, N_CHANNELS); % The matrix of the coherence
-
+N_overlap = round(N_fft*(N_overlap_perc/100)); % convert overlap percentage to samples
 %% Processing
 
 win = hanning(N_fft); % Window creation
@@ -161,8 +188,6 @@ for ch_idx = 1:N_CHANNELS
     % Returns the H and the COH till the fs/2 value
     temp_H = temp_H(1:lengthfreqvect);
     
-    
-    
     % Storing values
     h(:, ch_idx) = temp_h;
     H(:, ch_idx) = temp_H;
@@ -172,10 +197,6 @@ end% for ch_idx
 if PlotFlag
     H_Estimator_Plots(h, H, COH, fs, FigureNameTextStr);
 end
-
-% % Matrix of impulse responses
-%  = ifft(temp_H, N_fft, 1, 'symmetric'); % Ifft along dimension 1
-
 end%HEstimator
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
