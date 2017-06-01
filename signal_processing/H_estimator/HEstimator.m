@@ -150,3 +150,34 @@ for ch_idx = 1:N_CHANNELS
     COH(:, ch_idx) = COH_temp;
 end% for ch_idx
 end%HEstimator
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% SUB-ROUTINES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function delay_sequence
+
+end
+
+function [DelayedOutputSignal, delay_in_samples] = ...
+    AlignTwoSequences(InputSignal, OutputSignal)
+% OutputSignal is the sequence that is shifted
+% [1] CLASSIFICATION AND EVALUATION OF DISCRETE SUBSAMPLE TIME DELAY ESTIMATION ALGORITHMS
+InputSignal = InputSignal(:);
+OutputSignal = OutputSignal(:);
+delay_in_samples = EstimateDelayInSamplesBtwTwoSequences(InputSignal, OutputSignal);
+% Shift in the time domain
+DelayedOutputSignal = circshift(OutputSignal, -delay_in_samples);
+end
+
+function [delay_in_samples,  CrossCorrelation] = EstimateDelayInSamplesBtwTwoSequences(InputSignal, OutputSignal)
+% Estimates the delay in samples between OutputSignal and the reference sequence InputSignal
+lengthInput = length(InputSignal);
+lengthOutput = length(OutputSignal);
+CrossCorrelation = xcorr(OutputSignal, InputSignal); %compute cross-correlation between vectors InputSignal and OutputSignal
+
+[~, d] = max(CrossCorrelation); %find value and index of maximum value of cross-correlation amplitude
+delay_in_samples = d - max(lengthInput, lengthOutput) + 1; %shift index d, as length(X1)=2*N-1; where N is the length of the signals
+delay_in_samples = delay_in_samples - 1;
+
+end%EstimateDelayInSamplesBtwTwoSequences
