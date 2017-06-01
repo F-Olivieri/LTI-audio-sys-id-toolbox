@@ -51,41 +51,12 @@ function [h, H, COH] = HEstimator(InputSignal, OutputSignal, N_fft, N_overlap_pe
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%% EXAMPLE CODE
+%% Run EXAMPLE CODE
 if nargin < 1
-    disp('Running the example code...');
-    % Create some fake data
-    fs = 48000; % sampling frequency
-    n_samples = 500; % length of excitation and recorded signals
-    whitenoise = randn(n_samples, 1); % excitation signal
-    
-    outputtest = zeros(n_samples, 2); % fake 2-ch recording
-    outputtest(:, 1) = circshift(whitenoise, 100); % basically a delayed version of the input
-    outputtest(:, 2) = circshift(whitenoise, 200);
-    
-    % Parameters for the Estimation
-    N_fft = 300; % duration of the estimated IRs
-    N_overlap_perc = 50; % percent of overlap
-    AlignmentBoolean = 1;
-    PlotFlag = 1;
-    FigureNameTextStr = 'Example code';
-
-    % Estimation (with plots)
-    [h_test, H_test, COH_test] = HEstimator(whitenoise, outputtest, N_fft, ...
-        N_overlap_perc, 'H1', AlignmentBoolean, PlotFlag, FigureNameTextStr, fs);
-    
-     % Estimation (without plots)
-    [h_test, H_test, COH_test] = HEstimator(whitenoise, outputtest, N_fft, ...
-        N_overlap_perc, 'H1', AlignmentBoolean);
-    
-    
-    
-    disp('End of the example code...');
+    run_example_code_H_estimator();
     % exit the function by assigning NaN to output values to avoid Matlab's
     % complaint if values are not assigned.
-    h = NaN;
-    H = NaN; 
-    COH = NaN;
+    h = NaN; H = NaN; COH = NaN;
     return;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -198,6 +169,41 @@ if PlotFlag
     H_Estimator_Plots(h, H, COH, fs, FigureNameTextStr);
 end
 end%HEstimator
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% EXAMPLE CODE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function [h, H, COH] = run_example_code_H_estimator()
+disp('Running the example code...');
+    % Create some fake data
+    fs = 48000; % sampling frequency
+    n_samples = 500; % length of excitation and recorded signals
+    whitenoise = randn(n_samples, 1); % excitation signal
+    
+    outputtest = zeros(n_samples, 2); % fake 2-ch recording
+    outputtest(:, 1) = circshift(whitenoise, 100); % basically a delayed version of the input
+    outputtest(:, 2) = circshift(whitenoise, 200);
+    
+    % Parameters for the Estimation
+    N_fft = 300; % duration of the estimated IRs
+    N_overlap_perc = 50; % percent of overlap
+    AlignmentBoolean = 1;
+    PlotFlag = 1;
+    FigureNameTextStr = 'Example code';
+
+    % Estimation (with plots)
+    [h_test, H_test, COH_test] = HEstimator(whitenoise, outputtest, N_fft, ...
+        N_overlap_perc, 'H1', AlignmentBoolean, PlotFlag, FigureNameTextStr, fs);
+    
+     % Estimation (without plots)
+    [h_test, H_test, COH_test] = HEstimator(whitenoise, outputtest, N_fft, ...
+        N_overlap_perc, 'H1', AlignmentBoolean);
+    
+    
+    
+    disp('End of the example code...');
+    
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% SUB-ROUTINES
