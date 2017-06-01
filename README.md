@@ -23,4 +23,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ## Features
 Current implementation supports
 - estimation of transfer functions from recordings obtained with a white noise excitation signal. 
-Example code in ``examples/whitenoise_TF_estimation_script.m''.
+Example code in `examples/whitenoise_TF_estimation_script.m`.
