@@ -1,0 +1,3 @@
+[submodule "pa-wavplay"]
+	path = pa-wavplay
+	url = https://github.com/jgdsens/pa-wavplay
