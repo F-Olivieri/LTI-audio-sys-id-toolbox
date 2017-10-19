@@ -1,4 +1,4 @@
-function Play(InputFile, out_ch_idx, TotalNumbOutputChannels, fs, MaxGain, NumberOfRepeats)
+function Play(InputSig, out_ch_idx, TotalNumbOutputChannels, fs, MaxGain, NumberOfRepeats)
 % PLAY is an abstraction to pa_wavplay.
 % INPUTS:
 % - INPUTFILE is a vector with the input signal
@@ -16,12 +16,18 @@ function Play(InputFile, out_ch_idx, TotalNumbOutputChannels, fs, MaxGain, Numbe
 % - NUMBEROFREPEATS is a scalar indicating the total number of
 % times the playback of INPUTFILE will be repeated.
 
-if nargin < 6, NumberOfRepeats = 1; end;
-if nargin < 5, MaxGain = MultiChAudioTlbx.MaxGainDefault; end;
-if nargin < 4, fs = MultiChAudioTlbx.fsDefault; end;
+if nargin < 6
+    NumberOfRepeats = 1; 
+end
+if nargin < 5
+    MaxGain = MultiChAudioTlbx.MaxGainDefault; 
+end
+if nargin < 4 
+    fs = MultiChAudioTlbx.fsDefault; 
+end
 
 % Adapting the input file to the format required by PA_WAVPLAYRECORD (it needs a matrix)
-InputWAVSignalMatrix =  MultiChAudioTlbx.OutputMatrixFormat(InputFile, TotalNumbOutputChannels, out_ch_idx);
+InputWAVSignalMatrix = OutputMatrixFormat(InputSig, TotalNumbOutputChannels, out_ch_idx);
 InputWAVSignalMatrix = Normalize(InputWAVSignalMatrix, MaxGain);
 
 repeat_idx = 0;
